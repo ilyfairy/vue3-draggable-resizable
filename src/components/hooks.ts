@@ -311,9 +311,9 @@ export function initDraggableContainer(
   const handleDrag = (e: MouseEvent) => {
     e.preventDefault()
     const trigger = triggerKey.value=='right'?3:1;
-    console.log("键",triggerKey.value)
-    console.log("对应key",trigger)
-    console.log('按下的键',e)
+    // console.log("键",triggerKey.value)
+    // console.log("对应key",trigger)
+    // console.log('按下的键',e)
     if(trigger!= e.which){
       return;
     }

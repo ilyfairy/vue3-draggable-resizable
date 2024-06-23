@@ -1,23 +1,25 @@
 <template>
   <div id="app">
     <div>
-      x:{{ x }} <button @click="x += 10">+</button><button @click="x -= 10">-</button>
+      x:{{ x }} <button @click="x += 10">+</button
+      ><button @click="x -= 10">-</button>
     </div>
     <div>
-      y:{{ y }}<button @click="y += 10">+</button><button @click="y -= 10">-</button>
+      y:{{ y }}<button @click="y += 10">+</button
+      ><button @click="y -= 10">-</button>
     </div>
     <div>
-      w:{{ w }}<button @click="w += 10">+</button><button @click="w -= 10">-</button>
+      w:{{ w }}<button @click="w += 10">+</button
+      ><button @click="w -= 10">-</button>
     </div>
     <div>
-      h: {{ h }}<button @click="h += 10">+</button><button @click="h -= 10">-</button>
+      h: {{ h }}<button @click="h += 10">+</button
+      ><button @click="h -= 10">-</button>
     </div>
-     <div>
-      scale:{{scale}} 滚动鼠标滚轮缩放画布
-     </div>
+    <div>scale:{{ scale }} 滚动鼠标滚轮缩放画布</div>
 
     <div>active:{{ active }}<br /></div>
-    <div class="parent" :style="{transform:'scale('+scale+')'}">
+    <div class="parent" :style="{ transform: 'scale(' + scale + ')' }">
       <Vue3DraggableResizable
         :initW="40"
         :initH="80"
@@ -54,48 +56,43 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { ref, onMounted } from "vue";
 import Vue3DraggableResizable from "./components/Vue3DraggableResizable";
 import DraggableContainer from "./components/DraggableContainer";
 
-export default defineComponent({
-  components: { DraggableContainer, Vue3DraggableResizable },
-  data() {
-    return {
-      x: 100,
-      y: 100,
-      h: 100,
-      w: 100,
-      active: false,
-      draggable: true,
-      resizable: false,
-      scale:1
-    };
-  },
-  mounted() {
-    //@ts-ignore
-    window.addEventListener("mousewheel",this.mousewheel,false)
-  },
-  methods: {
-    mousewheel(e:WheelEvent){
-        if(e.deltaY<0){
-          if(this.scale<1){
-            this.scale = Math.fround((this.scale+0.1)*100)/100
-          }
-        }else{
-           if(this.scale>0.1){
-            this.scale = Math.fround((this.scale-0.1)*100)/100
-          }
-        }
-    },
-    print(val:any, e:any) {
-      // console.log(val, e)
-    },
-  },
+function print(val: any, e: any) {
+  // console.log(val, e);
+}
+
+const x = ref(100);
+const y = ref(100);
+const h = ref(100);
+const w = ref(100);
+const active = ref(false);
+const draggable = ref(true);
+const resizable = ref(false);
+const scale = ref(1);
+
+function mousewheel(e: WheelEvent) {
+  if (e.deltaY < 0) {
+    if (scale.value < 1) {
+      scale.value = Math.fround((scale.value + 0.1) * 100) / 100;
+    }
+  } else {
+    if (scale.value > 0.1) {
+      scale.value = Math.fround((scale.value - 0.1) * 100) / 100;
+    }
+  }
+}
+
+onMounted(() => {
+  window.addEventListener("mousewheel", () => mousewheel, false);
 });
+
 </script>
+
 <style lang="less" scoped>
-#app{
+#app {
   padding: 50px;
 }
 .parent {
