@@ -1,4 +1,4 @@
-<p align="center"><img src="https://github.com/a7650/vue3-draggable-resizable/blob/main/docs/logo.png" alt="logo"></p>
+<p align="center"><img src="https://github.com/ilyfairy/vue3-draggable-resizable/blob/main/docs/logo.png" alt="logo"></p>
 
 <h1 align="center">Vue3DraggableResizable</h1>
 <div align="center">
@@ -13,7 +13,7 @@
 > [Vue3 组件] 用于拖拽调整位置和大小的的组件，同时支持冲突检测，元素吸附对齐，实时参考线。
 > [ Vue3 Component ] Draggable and resizable component for vue3, and, support element adsorption alignment, real-time reference line, etc.
 
-[点击查看中文文档](https://github.com/songyu719/vue3-draggable-resizable/blob/main/docs/document_zh.md)
+[点击查看中文文档](https://github.com/ilyfairy/vue3-draggable-resizable/blob/main/docs/document_zh.md)
 
 ## Table of Contents
 
@@ -88,6 +88,7 @@ Here is a complete example of using "vue-template"
         :resizable="true"
         :parent-scale-x="0.5"
         :parent-scale-y="0.5"
+        :preventDeactivated="false"
         @activated="print('activated')"
         @deactivated="print('deactivated')"
         @drag-start="print('drag-start')"
@@ -276,6 +277,17 @@ The `lockAspectRatio` property is used to lock aspect ratio.
 
 ```html
 <Vue3DraggableResizable :lockAspectRatio="true" />
+```
+
+#### preventDeactivated
+
+type:`Boolean`<br>
+default:`false`<br>
+
+Determines if the component should be deactivated when the user clicks/taps outside it.
+
+```html
+<Vue3DraggableResizable :preventDeactivated="false"/>
 ```
 
 #### disabledX

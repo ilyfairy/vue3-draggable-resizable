@@ -1,18 +1,6 @@
-import { onMounted, onUnmounted, ref, watch, Ref, computed } from 'vue'
-import {
-  getElSize,
-  filterHandles,
-  getId,
-  getReferenceLineMap,
-  addEvent,
-  removeEvent
-} from './utils'
-import {
-  ContainerProvider,
-  MatchedLine,
-  ReferenceLineMap,
-  ResizingHandle
-} from './types'
+import {computed, onMounted, onUnmounted, Ref, ref, watch} from 'vue'
+import {addEvent, filterHandles, getElSize, getId, getReferenceLineMap, removeEvent} from './utils'
+import {ContainerProvider, MatchedLine, ReferenceLineMap, ResizingHandle} from './types'
 
 type HandleEvent = MouseEvent | TouchEvent
 
@@ -43,13 +31,14 @@ export function initState(props: any, emit: any) {
   const [parentScaleY,setParentScaleY] = useState<number>(props.parentScaleY)
   const [triggerKey,setTriggerKey] = useState<TriggerKey>(props.triggerKey)
 
+  const [preventDeactivated, setPreventDeactivated] = useState<boolean>(props.preventDeactivated)
   const aspectRatio = computed(() => height.value / width.value)
   watch(
-    width,
-    (newVal) => {
-      emit('update:w', newVal)
-    },
-    { immediate: true }
+      width,
+      (newVal) => {
+        emit('update:w', newVal)
+      },
+      {immediate: true}
   )
   watch(
     height,
@@ -105,6 +94,7 @@ export function initState(props: any, emit: any) {
     parentScaleX,
     parentScaleY,
     triggerKey,
+    preventDeactivated,
     setEnable,
     setDragging,
     setResizing,
@@ -113,27 +103,49 @@ export function initState(props: any, emit: any) {
     setResizingMaxWidth,
     setResizingMinWidth,
     setResizingMinHeight,
-    $setWidth: (val: number) => setWidth(Math.floor(val)),
-    $setHeight: (val: number) => setHeight(Math.floor(val)),
-    $setTop: (val: number) => setTop(Math.floor(val)),
-    $setLeft: (val: number) => setLeft(Math.floor(val)),
-    
-    setWidth: (val: number) => setWidth(Math.floor(val)),
-    setHeight: (val: number) => setHeight(Math.floor(val)),
-    setTop: (val: number) => setTop(Math.floor(val)),
-    setLeft: (val: number) => setLeft(Math.floor(val))
+    setPreventDeactivated,
+    setWidthFun: (val: number) => setWidth(Math.floor(val)),
+    setHeightFun: (val: number) => setHeight(Math.floor(val)),
+    setTopFun: (val: number) => setTop(Math.floor(val)),
+    setLeftFun: (val: number) => setLeft(Math.floor(val))
   }
 }
 
+
 export function initParent(containerRef: Ref<HTMLElement | undefined>) {
+  ;(function () {
+    const throttle = function (type:string, name:string, obj:any) {
+      obj = obj || window;
+      let running = false;
+      const func = function () {
+        if (running) {
+          return;
+        }
+        running = true;
+        requestAnimationFrame(function () {
+          obj.dispatchEvent(new CustomEvent(name));
+          running = false;
+        });
+      };
+      obj.addEventListener(type, func);
+    };
+    throttle("resize", "optimizedResize",window)
+  })();
   const parentWidth = ref(0)
   const parentHeight = ref(0)
-  onMounted(() => {
+  const computedParent = () => {
     if (containerRef.value && containerRef.value.parentElement) {
-      const { width, height } = getElSize(containerRef.value.parentElement)
+      const {width, height} = getElSize(containerRef.value.parentElement)
       parentWidth.value = width
       parentHeight.value = height
     }
+  }
+  onMounted(() => {
+    computedParent();
+    window.addEventListener("optimizedResize", computedParent);
+  })
+  onUnmounted(() => {
+    window.removeEventListener("optimizedResize", computedParent)
   })
   return {
     parentWidth,
@@ -156,7 +168,7 @@ export function initLimitSizeAndMethods(
     resizingMinWidth,
     resizingMinHeight
   } = containerProps
-  const { setWidth, setHeight, setTop, setLeft } = containerProps
+  const { setWidthFun, setHeightFun, setTopFun, setLeftFun } = containerProps
   const { parentWidth, parentHeight } = parentSize
   const limitProps = {
     minWidth: computed(() => {
@@ -197,7 +209,7 @@ export function initLimitSizeAndMethods(
       if (props.disabledW) {
         return width.value
       }
-      return setWidth(
+      return setWidthFun(
         Math.min(
           limitProps.maxWidth.value,
           Math.max(limitProps.minWidth.value, val)
@@ -208,7 +220,7 @@ export function initLimitSizeAndMethods(
       if (props.disabledH) {
         return height.value
       }
-      return setHeight(
+      return setHeightFun(
         Math.min(
           limitProps.maxHeight.value,
           Math.max(limitProps.minHeight.value, val)
@@ -219,7 +231,7 @@ export function initLimitSizeAndMethods(
       if (props.disabledY) {
         return top.value
       }
-      return setTop(
+      return setTopFun(
         Math.min(
           limitProps.maxTop.value,
           Math.max(limitProps.minTop.value, val)
@@ -230,7 +242,7 @@ export function initLimitSizeAndMethods(
       if (props.disabledX) {
         return left.value
       }
-      return setLeft(
+      return setLeftFun(
         Math.min(
           limitProps.maxLeft.value,
           Math.max(limitProps.minLeft.value, val)
@@ -265,7 +277,7 @@ export function initDraggableContainer(
   containerProvider: ContainerProvider | null,
   parentSize: ReturnType<typeof initParent>
 ) {
-  const { left: x, top: y, width: w, height: h, dragging, id } = containerProps
+  const {left: x, top: y, width: w, height: h, dragging, id, preventDeactivated} = containerProps
   const {
     setDragging,
     setEnable,
@@ -275,7 +287,7 @@ export function initDraggableContainer(
     parentScaleY,
     triggerKey
   } = containerProps
-  const { setTop, setLeft } = limitProps
+  const {setTop, setLeft} = limitProps
   let lstX = 0
   let lstY = 0
   let lstPageX = 0
@@ -285,7 +297,9 @@ export function initDraggableContainer(
   const _unselect = (e: HandleEvent) => {
     const target = e.target
     if (!containerRef.value?.contains(<Node>target)) {
-      setEnable(false)
+      if (!preventDeactivated.value) {
+        setEnable(false)
+      }
       setDragging(false)
       setResizing(false)
       setResizingHandle('')

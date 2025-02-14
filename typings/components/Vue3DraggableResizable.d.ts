@@ -1,6 +1,6 @@
 import { Ref } from 'vue';
 import './index.css';
-import { ResizingHandle, ContainerProvider } from './types';
+import { ContainerProvider, ResizingHandle } from './types';
 export declare const ALL_HANDLES: ResizingHandle[];
 declare const VueDraggableResizable: import("vue").DefineComponent<import("vue").ExtractPropTypes<{
     initW: {
@@ -112,6 +112,10 @@ declare const VueDraggableResizable: import("vue").DefineComponent<import("vue")
         type: StringConstructor;
         default: string;
     };
+    preventDeactivated: {
+        type: BooleanConstructor;
+        default: boolean;
+    };
 }>, {
     handlesFiltered: import("vue").ComputedRef<ResizingHandle[]>;
     resizeHandleDown: (e: MouseEvent | TouchEvent, handleType: ResizingHandle) => void;
@@ -146,6 +150,7 @@ declare const VueDraggableResizable: import("vue").DefineComponent<import("vue")
     parentScaleX: Ref<number, number>;
     parentScaleY: Ref<number, number>;
     triggerKey: Ref<"left" | "right", "left" | "right">;
+    preventDeactivated: Ref<boolean, boolean>;
     setEnable: (value: boolean) => boolean;
     setDragging: (value: boolean) => boolean;
     setResizing: (value: boolean) => boolean;
@@ -154,10 +159,11 @@ declare const VueDraggableResizable: import("vue").DefineComponent<import("vue")
     setResizingMaxWidth: (value: number) => number;
     setResizingMinWidth: (value: number) => number;
     setResizingMinHeight: (value: number) => number;
-    $setWidth: (val: number) => number;
-    $setHeight: (val: number) => number;
-    $setTop: (val: number) => number;
-    $setLeft: (val: number) => number;
+    setPreventDeactivated: (value: boolean) => boolean;
+    setWidthFun: (val: number) => number;
+    setHeightFun: (val: number) => number;
+    setTopFun: (val: number) => number;
+    setLeftFun: (val: number) => number;
     containerRef: Ref<HTMLElement | undefined, HTMLElement | undefined>;
     containerProvider: ContainerProvider | null;
 }, {}, {
@@ -277,6 +283,10 @@ declare const VueDraggableResizable: import("vue").DefineComponent<import("vue")
         type: StringConstructor;
         default: string;
     };
+    preventDeactivated: {
+        type: BooleanConstructor;
+        default: boolean;
+    };
 }>> & Readonly<{
     [x: `on${Capitalize<string>}`]: ((...args: any[]) => any) | undefined;
 }>, {
@@ -287,6 +297,7 @@ declare const VueDraggableResizable: import("vue").DefineComponent<import("vue")
     parentScaleX: number;
     parentScaleY: number;
     triggerKey: string;
+    preventDeactivated: boolean;
     draggable: boolean;
     resizable: boolean;
     active: boolean;

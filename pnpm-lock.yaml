@@ -15,34 +15,34 @@ importers:
         specifier: ^2.33.0
         version: 2.34.0(eslint@6.8.0)(typescript@5.7.3)
       '@vue/babel-plugin-jsx':
-        specifier: ^1.0.0-rc.3
+        specifier: ^1.0.3
         version: 1.2.5(@babel/core@7.26.8)
       '@vue/cli-plugin-babel':
-        specifier: ~4.5.0
+        specifier: ^4.5.11
         version: 4.5.19(@vue/cli-service@4.5.19(@vue/compiler-sfc@3.5.13)(less-loader@5.0.0(less@3.13.1)(webpack@4.47.0))(lodash@4.17.21)(typescript@5.7.3)(vue@3.5.13(typescript@5.7.3)))(core-js@3.40.0)(vue@3.5.13(typescript@5.7.3))
       '@vue/cli-plugin-eslint':
-        specifier: ~4.5.0
+        specifier: ^4.5.11
         version: 4.5.19(@vue/cli-service@4.5.19(@vue/compiler-sfc@3.5.13)(less-loader@5.0.0(less@3.13.1)(webpack@4.47.0))(lodash@4.17.21)(typescript@5.7.3)(vue@3.5.13(typescript@5.7.3)))(eslint@6.8.0)
       '@vue/cli-plugin-router':
-        specifier: ~4.5.0
+        specifier: ^4.5.11
         version: 4.5.19(@vue/cli-service@4.5.19(@vue/compiler-sfc@3.5.13)(less-loader@5.0.0(less@3.13.1)(webpack@4.47.0))(lodash@4.17.21)(typescript@5.7.3)(vue@3.5.13(typescript@5.7.3)))
       '@vue/cli-plugin-typescript':
-        specifier: ~4.5.0
+        specifier: ^4.5.11
         version: 4.5.19(@vue/cli-service@4.5.19(@vue/compiler-sfc@3.5.13)(less-loader@5.0.0(less@3.13.1)(webpack@4.47.0))(lodash@4.17.21)(typescript@5.7.3)(vue@3.5.13(typescript@5.7.3)))(@vue/compiler-sfc@3.5.13)(eslint@6.8.0)(typescript@5.7.3)(vue@3.5.13(typescript@5.7.3))
       '@vue/cli-plugin-vuex':
-        specifier: ~4.5.0
+        specifier: ^4.5.11
         version: 4.5.19(@vue/cli-service@4.5.19(@vue/compiler-sfc@3.5.13)(less-loader@5.0.0(less@3.13.1)(webpack@4.47.0))(lodash@4.17.21)(typescript@5.7.3)(vue@3.5.13(typescript@5.7.3)))
       '@vue/cli-service':
-        specifier: ~4.5.0
+        specifier: ^4.5.11
         version: 4.5.19(@vue/compiler-sfc@3.5.13)(less-loader@5.0.0(less@3.13.1)(webpack@4.47.0))(lodash@4.17.21)(typescript@5.7.3)(vue@3.5.13(typescript@5.7.3))
       '@vue/compiler-sfc':
-        specifier: ^3.0.0
+        specifier: ^3.0.6
         version: 3.5.13
       '@vue/eslint-config-typescript':
         specifier: ^5.0.2
         version: 5.1.0(@typescript-eslint/eslint-plugin@2.34.0(@typescript-eslint/parser@2.34.0(eslint@6.8.0)(typescript@5.7.3))(eslint@6.8.0)(typescript@5.7.3))(@typescript-eslint/parser@2.34.0(eslint@6.8.0)(typescript@5.7.3))(eslint-plugin-vue@7.20.0(eslint@6.8.0))(eslint@6.8.0)(typescript@5.7.3)
       babel-plugin-import:
-        specifier: ^1.13.1
+        specifier: ^1.13.3
         version: 1.13.8
       core-js:
         specifier: ^3.6.5
@@ -51,10 +51,10 @@ importers:
         specifier: ^6.7.2
         version: 6.8.0
       eslint-plugin-vue:
-        specifier: ^7.0.0-0
+        specifier: ^7.6.0
         version: 7.20.0(eslint@6.8.0)
       less:
-        specifier: ^3.0.4
+        specifier: ^3.13.1
         version: 3.13.1
       less-loader:
         specifier: ^5.0.0
