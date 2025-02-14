@@ -2352,6 +2352,7 @@ function initState(props, emit) {
   const [parentScaleX, setParentScaleX] = useState(props.parentScaleX);
   const [parentScaleY, setParentScaleY] = useState(props.parentScaleY);
   const [triggerKey, setTriggerKey] = useState(props.triggerKey);
+  const [preventDeactivated, setPreventDeactivated] = useState(props.preventDeactivated);
   const aspectRatio = Object(external_commonjs_vue_commonjs2_vue_root_Vue_["computed"])(() => height.value / width.value);
   Object(external_commonjs_vue_commonjs2_vue_root_Vue_["watch"])(width, newVal => {
     emit('update:w', newVal);
@@ -2407,6 +2408,7 @@ function initState(props, emit) {
     parentScaleX,
     parentScaleY,
     triggerKey,
+    preventDeactivated,
     setEnable,
     setDragging,
     setResizing,
@@ -2415,20 +2417,36 @@ function initState(props, emit) {
     setResizingMaxWidth,
     setResizingMinWidth,
     setResizingMinHeight,
-    $setWidth: val => setWidth(Math.floor(val)),
-    $setHeight: val => setHeight(Math.floor(val)),
-    $setTop: val => setTop(Math.floor(val)),
-    $setLeft: val => setLeft(Math.floor(val)),
-    setWidth: val => setWidth(Math.floor(val)),
-    setHeight: val => setHeight(Math.floor(val)),
-    setTop: val => setTop(Math.floor(val)),
-    setLeft: val => setLeft(Math.floor(val))
+    setPreventDeactivated,
+    setWidthFun: val => setWidth(Math.floor(val)),
+    setHeightFun: val => setHeight(Math.floor(val)),
+    setTopFun: val => setTop(Math.floor(val)),
+    setLeftFun: val => setLeft(Math.floor(val))
   };
 }
 function initParent(containerRef) {
+  ;
+  (function () {
+    const throttle = function (type, name, obj) {
+      obj = obj || window;
+      let running = false;
+      const func = function () {
+        if (running) {
+          return;
+        }
+        running = true;
+        requestAnimationFrame(function () {
+          obj.dispatchEvent(new CustomEvent(name));
+          running = false;
+        });
+      };
+      obj.addEventListener(type, func);
+    };
+    throttle("resize", "optimizedResize", window);
+  })();
   const parentWidth = Object(external_commonjs_vue_commonjs2_vue_root_Vue_["ref"])(0);
   const parentHeight = Object(external_commonjs_vue_commonjs2_vue_root_Vue_["ref"])(0);
-  Object(external_commonjs_vue_commonjs2_vue_root_Vue_["onMounted"])(() => {
+  const computedParent = () => {
     if (containerRef.value && containerRef.value.parentElement) {
       const {
         width,
@@ -2437,6 +2455,13 @@ function initParent(containerRef) {
       parentWidth.value = width;
       parentHeight.value = height;
     }
+  };
+  Object(external_commonjs_vue_commonjs2_vue_root_Vue_["onMounted"])(() => {
+    computedParent();
+    window.addEventListener("optimizedResize", computedParent);
+  });
+  Object(external_commonjs_vue_commonjs2_vue_root_Vue_["onUnmounted"])(() => {
+    window.removeEventListener("optimizedResize", computedParent);
   });
   return {
     parentWidth,
@@ -2455,10 +2480,10 @@ function initLimitSizeAndMethods(props, parentSize, containerProps) {
     resizingMinHeight
   } = containerProps;
   const {
-    setWidth,
-    setHeight,
-    setTop,
-    setLeft
+    setWidthFun,
+    setHeightFun,
+    setTopFun,
+    setLeftFun
   } = containerProps;
   const {
     parentWidth,
@@ -2503,25 +2528,25 @@ function initLimitSizeAndMethods(props, parentSize, containerProps) {
       if (props.disabledW) {
         return width.value;
       }
-      return setWidth(Math.min(limitProps.maxWidth.value, Math.max(limitProps.minWidth.value, val)));
+      return setWidthFun(Math.min(limitProps.maxWidth.value, Math.max(limitProps.minWidth.value, val)));
     },
     setHeight(val) {
       if (props.disabledH) {
         return height.value;
       }
-      return setHeight(Math.min(limitProps.maxHeight.value, Math.max(limitProps.minHeight.value, val)));
+      return setHeightFun(Math.min(limitProps.maxHeight.value, Math.max(limitProps.minHeight.value, val)));
     },
     setTop(val) {
       if (props.disabledY) {
         return top.value;
       }
-      return setTop(Math.min(limitProps.maxTop.value, Math.max(limitProps.minTop.value, val)));
+      return setTopFun(Math.min(limitProps.maxTop.value, Math.max(limitProps.minTop.value, val)));
     },
     setLeft(val) {
       if (props.disabledX) {
         return left.value;
       }
-      return setLeft(Math.min(limitProps.maxLeft.value, Math.max(limitProps.minLeft.value, val)));
+      return setLeftFun(Math.min(limitProps.maxLeft.value, Math.max(limitProps.minLeft.value, val)));
     }
   };
   return {
@@ -2546,7 +2571,8 @@ function initDraggableContainer(containerRef, containerProps, limitProps, dragga
     width: w,
     height: h,
     dragging,
-    id
+    id,
+    preventDeactivated
   } = containerProps;
   const {
     setDragging,
@@ -2571,7 +2597,9 @@ function initDraggableContainer(containerRef, containerProps, limitProps, dragga
     var _containerRef$value;
     const target = e.target;
     if (!((_containerRef$value = containerRef.value) !== null && _containerRef$value !== void 0 && _containerRef$value.contains(target))) {
-      setEnable(false);
+      if (!preventDeactivated.value) {
+        setEnable(false);
+      }
       setDragging(false);
       setResizing(false);
       setResizingHandle('');
@@ -3019,6 +3047,10 @@ const VdrProps = {
   triggerKey: {
     type: String,
     default: 'left'
+  },
+  preventDeactivated: {
+    type: Boolean,
+    default: false
   }
 };
 const emits = ['activated', 'deactivated', 'drag-start', 'resize-start', 'dragging', 'resizing', 'drag-end', 'resize-end', 'update:w', 'update:h', 'update:x', 'update:y', 'update:active'];

@@ -1,7 +1,7 @@
-import { defineComponent, ref, toRef, h, inject } from 'vue';
-import { initDraggableContainer, watchProps, initState, initParent, initLimitSizeAndMethods, initResizeHandle } from './hooks';
+import { defineComponent, h, inject, ref, toRef } from 'vue';
+import { initDraggableContainer, initLimitSizeAndMethods, initParent, initResizeHandle, initState, watchProps } from './hooks';
 import './index.css';
-import { getElSize, filterHandles, IDENTITY } from './utils';
+import { filterHandles, getElSize, IDENTITY } from './utils';
 export const ALL_HANDLES = [
     'tl',
     'tm',
@@ -123,6 +123,10 @@ const VdrProps = {
     triggerKey: {
         type: String,
         default: 'left'
+    },
+    preventDeactivated: {
+        type: Boolean,
+        default: false,
     }
 };
 const emits = [

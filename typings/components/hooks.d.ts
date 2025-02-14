@@ -21,6 +21,7 @@ export declare function initState(props: any, emit: any): {
     parentScaleX: Ref<number, number>;
     parentScaleY: Ref<number, number>;
     triggerKey: Ref<TriggerKey, TriggerKey>;
+    preventDeactivated: Ref<boolean, boolean>;
     setEnable: (value: boolean) => boolean;
     setDragging: (value: boolean) => boolean;
     setResizing: (value: boolean) => boolean;
@@ -29,14 +30,11 @@ export declare function initState(props: any, emit: any): {
     setResizingMaxWidth: (value: number) => number;
     setResizingMinWidth: (value: number) => number;
     setResizingMinHeight: (value: number) => number;
-    $setWidth: (val: number) => number;
-    $setHeight: (val: number) => number;
-    $setTop: (val: number) => number;
-    $setLeft: (val: number) => number;
-    setWidth: (val: number) => number;
-    setHeight: (val: number) => number;
-    setTop: (val: number) => number;
-    setLeft: (val: number) => number;
+    setPreventDeactivated: (value: boolean) => boolean;
+    setWidthFun: (val: number) => number;
+    setHeightFun: (val: number) => number;
+    setTopFun: (val: number) => number;
+    setLeftFun: (val: number) => number;
 };
 export declare function initParent(containerRef: Ref<HTMLElement | undefined>): {
     parentWidth: Ref<number, number>;

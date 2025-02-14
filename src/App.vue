@@ -39,6 +39,7 @@
         :parent-scale-x="scale"
         :parent-scale-y="scale"
         triggerKey="left"
+        :preventDeactivated="false"
         classNameHandle="my-handle"
         @activated="print('activated')"
         @deactivated="print('deactivated')"
@@ -96,8 +97,8 @@ onMounted(() => {
   padding: 50px;
 }
 .parent {
-  width: 1000px;
-  height: 500px;
+  width: 100%;
+  height: 300px;
   // position: absolute;
   // top: 100px;
   // left: 200px;
