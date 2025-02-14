@@ -3,8 +3,8 @@ import DraggableContainer from './components/DraggableContainer'
 import { App, Plugin } from 'vue'
 
 VueDraggableResizable.install = (app: App) => {
-  app.component(VueDraggableResizable.name, VueDraggableResizable)
-  app.component(DraggableContainer.name, DraggableContainer)
+  app.component(VueDraggableResizable.name!, VueDraggableResizable)
+  app.component(DraggableContainer.name!, DraggableContainer)
   return app
 }
 

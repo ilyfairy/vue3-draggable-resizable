@@ -1,91 +1,70 @@
-"use strict";
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
-exports.__esModule = true;
-exports.getReferenceLineMap = exports.getId = exports.filterHandles = exports.removeEvent = exports.addEvent = exports.getElSize = exports.IDENTITY = void 0;
-var Vue3DraggableResizable_1 = require("./Vue3DraggableResizable");
-exports.IDENTITY = Symbol('Vue3DraggableResizable');
-function getElSize(el) {
-    var style = window.getComputedStyle(el);
+import { ALL_HANDLES } from './Vue3DraggableResizable';
+export const IDENTITY = Symbol('Vue3DraggableResizable');
+export function getElSize(el) {
+    const style = window.getComputedStyle(el);
     return {
         width: parseFloat(style.getPropertyValue('width')),
         height: parseFloat(style.getPropertyValue('height'))
     };
 }
-exports.getElSize = getElSize;
 function createEventListenerFunction(type) {
-    return function (el, events, handler) {
+    return (el, events, handler) => {
         if (!el) {
             return;
         }
         if (typeof events === 'string') {
             events = [events];
         }
-        events.forEach(function (e) { return el[type](e, handler, { passive: false }); });
+        events.forEach((e) => el[type](e, handler, { passive: false }));
     };
 }
-exports.addEvent = createEventListenerFunction('addEventListener');
-exports.removeEvent = createEventListenerFunction('removeEventListener');
-function filterHandles(handles) {
+export const addEvent = createEventListenerFunction('addEventListener');
+export const removeEvent = createEventListenerFunction('removeEventListener');
+export function filterHandles(handles) {
     if (handles && handles.length > 0) {
-        var result_1 = [];
-        handles.forEach(function (item) {
-            if (Vue3DraggableResizable_1.ALL_HANDLES.includes(item) && !result_1.includes(item)) {
-                result_1.push(item);
+        const result = [];
+        handles.forEach((item) => {
+            if (ALL_HANDLES.includes(item) && !result.includes(item)) {
+                result.push(item);
             }
         });
-        return result_1;
+        return result;
     }
     else {
         return [];
     }
 }
-exports.filterHandles = filterHandles;
-function getId() {
+export function getId() {
     return String(Math.random()).substr(2) + String(Date.now());
 }
-exports.getId = getId;
-function getReferenceLineMap(containerProvider, parentSize, id) {
-    var _a, _b;
+export function getReferenceLineMap(containerProvider, parentSize, id) {
     if (containerProvider.disabled.value) {
         return null;
     }
-    var referenceLine = {
+    const referenceLine = {
         row: [],
         col: []
     };
-    var parentWidth = parentSize.parentWidth, parentHeight = parentSize.parentHeight;
-    (_a = referenceLine.row).push.apply(_a, containerProvider.adsorbRows);
-    (_b = referenceLine.col).push.apply(_b, containerProvider.adsorbCols);
+    const { parentWidth, parentHeight } = parentSize;
+    referenceLine.row.push(...containerProvider.adsorbRows);
+    referenceLine.col.push(...containerProvider.adsorbCols);
     if (containerProvider.adsorbParent.value) {
         referenceLine.row.push(0, parentHeight.value, parentHeight.value / 2);
         referenceLine.col.push(0, parentWidth.value, parentWidth.value / 2);
     }
-    var widgetPositionStore = containerProvider.getPositionStore(id);
-    Object.values(widgetPositionStore).forEach(function (_a) {
-        var x = _a.x, y = _a.y, w = _a.w, h = _a.h;
+    const widgetPositionStore = containerProvider.getPositionStore(id);
+    Object.values(widgetPositionStore).forEach(({ x, y, w, h }) => {
         referenceLine.row.push(y, y + h, y + h / 2);
         referenceLine.col.push(x, x + w, x + w / 2);
     });
-    var referenceLineMap = {
-        row: referenceLine.row.reduce(function (pre, cur) {
-            var _a;
-            return __assign(__assign({}, pre), (_a = {}, _a[cur] = { min: cur - 5, max: cur + 5, value: cur }, _a));
+    const referenceLineMap = {
+        row: referenceLine.row.reduce((pre, cur) => {
+            return { ...pre, [cur]: { min: cur - 5, max: cur + 5, value: cur } };
         }, {}),
-        col: referenceLine.col.reduce(function (pre, cur) {
-            var _a;
-            return __assign(__assign({}, pre), (_a = {}, _a[cur] = { min: cur - 5, max: cur + 5, value: cur }, _a));
+        col: referenceLine.col.reduce((pre, cur) => {
+            return { ...pre, [cur]: { min: cur - 5, max: cur + 5, value: cur } };
         }, {})
     };
     return referenceLineMap;
 }
-exports.getReferenceLineMap = getReferenceLineMap;
+//# sourceMappingURL=utils.js.map

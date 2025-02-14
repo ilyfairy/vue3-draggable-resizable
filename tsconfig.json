@@ -11,8 +11,10 @@
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "baseUrl": ".",
+    "declaration": true,
+    "declarationDir": "typings",
     "types": [
-      "webpack-env"
+      // "webpack-env"
     ],
     "paths": {
       "@/*": [
@@ -30,8 +32,6 @@
     "src/**/*.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
-    "tests/**/*.ts",
-    "tests/**/*.tsx", "dist/index.ts", "dist/vue3-draggable-resizable.d.ts", "vue3-draggable-resizable.d.ts"
   ],
   "exclude": [
     "node_modules"

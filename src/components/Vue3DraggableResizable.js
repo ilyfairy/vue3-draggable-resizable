@@ -1,29 +1,8 @@
-"use strict";
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
-var __spreadArrays = (this && this.__spreadArrays) || function () {
-    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
-    for (var r = Array(s), k = 0, i = 0; i < il; i++)
-        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-            r[k] = a[j];
-    return r;
-};
-exports.__esModule = true;
-exports.ALL_HANDLES = void 0;
-var vue_1 = require("vue");
-var hooks_1 = require("./hooks");
-require("./index.css");
-var utils_1 = require("./utils");
-exports.ALL_HANDLES = [
+import { defineComponent, ref, toRef, h, inject } from 'vue';
+import { initDraggableContainer, watchProps, initState, initParent, initLimitSizeAndMethods, initResizeHandle } from './hooks';
+import './index.css';
+import { getElSize, filterHandles, IDENTITY } from './utils';
+export const ALL_HANDLES = [
     'tl',
     'tm',
     'tr',
@@ -33,120 +12,120 @@ exports.ALL_HANDLES = [
     'bm',
     'br'
 ];
-var VdrProps = {
+const VdrProps = {
     initW: {
         type: Number,
-        "default": null
+        default: null
     },
     initH: {
         type: Number,
-        "default": null
+        default: null
     },
     w: {
         type: Number,
-        "default": 0
+        default: 0
     },
     h: {
         type: Number,
-        "default": 0
+        default: 0
     },
     x: {
         type: Number,
-        "default": 0
+        default: 0
     },
     y: {
         type: Number,
-        "default": 0
+        default: 0
     },
     draggable: {
         type: Boolean,
-        "default": true
+        default: true
     },
     resizable: {
         type: Boolean,
-        "default": true
+        default: true
     },
     disabledX: {
         type: Boolean,
-        "default": false
+        default: false
     },
     disabledY: {
         type: Boolean,
-        "default": false
+        default: false
     },
     disabledW: {
         type: Boolean,
-        "default": false
+        default: false
     },
     disabledH: {
         type: Boolean,
-        "default": false
+        default: false
     },
     minW: {
         type: Number,
-        "default": 20
+        default: 20
     },
     minH: {
         type: Number,
-        "default": 20
+        default: 20
     },
     active: {
         type: Boolean,
-        "default": false
+        default: false
     },
     parent: {
         type: Boolean,
-        "default": false
+        default: false
     },
     handles: {
         type: Array,
-        "default": exports.ALL_HANDLES,
-        validator: function (handles) {
-            return utils_1.filterHandles(handles).length === handles.length;
+        default: ALL_HANDLES,
+        validator: (handles) => {
+            return filterHandles(handles).length === handles.length;
         }
     },
     classNameDraggable: {
         type: String,
-        "default": 'draggable'
+        default: 'draggable'
     },
     classNameResizable: {
         type: String,
-        "default": 'resizable'
+        default: 'resizable'
     },
     classNameDragging: {
         type: String,
-        "default": 'dragging'
+        default: 'dragging'
     },
     classNameResizing: {
         type: String,
-        "default": 'resizing'
+        default: 'resizing'
     },
     classNameActive: {
         type: String,
-        "default": 'active'
+        default: 'active'
     },
     classNameHandle: {
         type: String,
-        "default": 'handle'
+        default: 'handle'
     },
     lockAspectRatio: {
         type: Boolean,
-        "default": false
+        default: false
     },
     parentScaleX: {
         type: Number,
-        "default": 1
+        default: 1
     },
     parentScaleY: {
         type: Number,
-        "default": 1
+        default: 1
     },
     triggerKey: {
         type: String,
-        "default": 'left'
+        default: 'left'
     }
 };
-var emits = [
+const emits = [
     'activated',
     'deactivated',
     'drag-start',
@@ -161,37 +140,42 @@ var emits = [
     'update:y',
     'update:active'
 ];
-var VueDraggableResizable = vue_1.defineComponent({
+const VueDraggableResizable = defineComponent({
     name: 'Vue3DraggableResizable',
     props: VdrProps,
     emits: emits,
-    setup: function (props, _a) {
-        var emit = _a.emit;
-        var containerProps = hooks_1.initState(props, emit);
-        var provideIdentity = vue_1.inject('identity');
-        var containerProvider = null;
-        if (provideIdentity === utils_1.IDENTITY) {
+    setup(props, { emit }) {
+        const containerProps = initState(props, emit);
+        const provideIdentity = inject('identity');
+        let containerProvider = null;
+        if (provideIdentity === IDENTITY) {
             containerProvider = {
-                updatePosition: vue_1.inject('updatePosition'),
-                getPositionStore: vue_1.inject('getPositionStore'),
-                disabled: vue_1.inject('disabled'),
-                adsorbParent: vue_1.inject('adsorbParent'),
-                adsorbCols: vue_1.inject('adsorbCols'),
-                adsorbRows: vue_1.inject('adsorbRows'),
-                setMatchedLine: vue_1.inject('setMatchedLine')
+                updatePosition: inject('updatePosition'),
+                getPositionStore: inject('getPositionStore'),
+                disabled: inject('disabled'),
+                adsorbParent: inject('adsorbParent'),
+                adsorbCols: inject('adsorbCols'),
+                adsorbRows: inject('adsorbRows'),
+                setMatchedLine: inject('setMatchedLine')
             };
         }
-        var containerRef = vue_1.ref();
-        var parentSize = hooks_1.initParent(containerRef);
-        var limitProps = hooks_1.initLimitSizeAndMethods(props, parentSize, containerProps);
-        hooks_1.initDraggableContainer(containerRef, containerProps, limitProps, vue_1.toRef(props, 'draggable'), emit, containerProvider, parentSize);
-        var resizeHandle = hooks_1.initResizeHandle(containerProps, limitProps, parentSize, props, emit);
-        hooks_1.watchProps(props, limitProps);
-        return __assign(__assign(__assign(__assign({ containerRef: containerRef,
-            containerProvider: containerProvider }, containerProps), parentSize), limitProps), resizeHandle);
+        const containerRef = ref();
+        const parentSize = initParent(containerRef);
+        const limitProps = initLimitSizeAndMethods(props, parentSize, containerProps);
+        initDraggableContainer(containerRef, containerProps, limitProps, toRef(props, 'draggable'), emit, containerProvider, parentSize);
+        const resizeHandle = initResizeHandle(containerProps, limitProps, parentSize, props, emit);
+        watchProps(props, limitProps);
+        return {
+            containerRef,
+            containerProvider,
+            ...containerProps,
+            ...parentSize,
+            ...limitProps,
+            ...resizeHandle
+        };
     },
     computed: {
-        style: function () {
+        style() {
             return {
                 width: this.width + 'px',
                 height: this.height + 'px',
@@ -199,22 +183,21 @@ var VueDraggableResizable = vue_1.defineComponent({
                 left: this.left + 'px'
             };
         },
-        klass: function () {
-            var _a;
-            return _a = {},
-                _a[this.classNameActive] = this.enable,
-                _a[this.classNameDragging] = this.dragging,
-                _a[this.classNameResizing] = this.resizing,
-                _a[this.classNameDraggable] = this.draggable,
-                _a[this.classNameResizable] = this.resizable,
-                _a;
+        klass() {
+            return {
+                [this.classNameActive]: this.enable,
+                [this.classNameDragging]: this.dragging,
+                [this.classNameResizing]: this.resizing,
+                [this.classNameDraggable]: this.draggable,
+                [this.classNameResizable]: this.resizable
+            };
         }
     },
-    mounted: function () {
+    mounted() {
         if (!this.containerRef)
             return;
-        this.containerRef.ondragstart = function () { return false; };
-        var _a = utils_1.getElSize(this.containerRef), width = _a.width, height = _a.height;
+        this.containerRef.ondragstart = () => false;
+        const { width, height } = getElSize(this.containerRef);
         this.setWidth(this.initW === null ? this.w || width : this.initW);
         this.setHeight(this.initH === null ? this.h || height : this.initH);
         if (this.containerProvider) {
@@ -226,31 +209,26 @@ var VueDraggableResizable = vue_1.defineComponent({
             });
         }
     },
-    render: function () {
-        var _this = this;
-        return vue_1.h('div', {
+    render() {
+        return h('div', {
             ref: 'containerRef',
-            "class": ['vdr-container', this.klass],
+            class: ['vdr-container', this.klass],
             style: this.style
-        }, __spreadArrays([
-            this.$slots["default"] && this.$slots["default"]()
-        ], this.handlesFiltered.map(function (item) {
-            return vue_1.h('div', {
-                "class": [
+        }, [
+            this.$slots.default && this.$slots.default(),
+            ...this.handlesFiltered.map((item) => h('div', {
+                class: [
                     'vdr-handle',
                     'vdr-handle-' + item,
-                    _this.classNameHandle,
-                    _this.classNameHandle + "-" + item
+                    this.classNameHandle,
+                    `${this.classNameHandle}-${item}`
                 ],
-                style: { display: _this.enable ? 'block' : 'none' },
-                onMousedown: function (e) {
-                    return _this.resizeHandleDown(e, item);
-                },
-                onTouchstart: function (e) {
-                    return _this.resizeHandleDown(e, item);
-                }
-            });
-        })));
+                style: { display: this.enable ? 'block' : 'none' },
+                onMousedown: (e) => this.resizeHandleDown(e, item),
+                onTouchstart: (e) => this.resizeHandleDown(e, item)
+            }))
+        ]);
     }
 });
-exports["default"] = VueDraggableResizable;
+export default VueDraggableResizable;
+//# sourceMappingURL=Vue3DraggableResizable.js.map
